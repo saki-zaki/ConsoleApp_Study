@@ -12,10 +12,10 @@ namespace test
         static private string FilePath { get; set; } = @"C:\Users\yamas\Desktop\test\sampleQuotes.txt";
         static void Main(string[] args)
         {
-            Console.Write("test");
             RunTeleprompter().Wait();
         }
 
+        //指定されたファイルの内容を単語で分割し、反復子で返す
         static IEnumerable<string> GetFileContent(string file)
         {
             using (var rs = File.OpenText(file))
@@ -28,6 +28,7 @@ namespace test
                     foreach (var word in words)
                     {
                         lineLength += word.Length + 1;
+                        //一文が70文字以上になれば改行
                         if (70 < lineLength)
                         {
                             yield return Environment.NewLine;
@@ -45,15 +46,18 @@ namespace test
             var words = GetFileContent(FilePath);
             foreach (var word in words)
             {
+                //単語の出力に、configで設定されている時間の間隔を設ける
                 Console.Write(word);
                 if (!string.IsNullOrWhiteSpace(word))
                 {
                     await Task.Delay(config.DelayInMilliseconds);
                 }
             }
+            //ファイルの読み込みが終了すると、終了を設定する
             config.SetDone();
         }
 
+        //ユーザーからの入力で、コンソールに出力される速度の設定・出力の中断をする
         private static async Task GetInput(TelePrompterConfig config)
         {
             var delay = 200;
@@ -78,7 +82,8 @@ namespace test
             var config = new TelePrompterConfig();
             var displayTask = ShowTeleprompter(config);
             var speedTask = GetInput(config);
-            await Task.WhenAny(displayTask, speedTask);
+            //
+            await Task.WhenAll(displayTask, speedTask);
         }
     }
 }
