@@ -28,7 +28,7 @@ namespace test
                     foreach (var word in words)
                     {
                         lineLength += word.Length + 1;
-                        //一文が70文字以上になれば改行
+                        //一文が70文字以上になれば改行する
                         if (70 < lineLength)
                         {
                             yield return Environment.NewLine;
@@ -53,7 +53,7 @@ namespace test
                     await Task.Delay(config.DelayInMilliseconds);
                 }
             }
-            //ファイルの読み込みが終了すると、終了を設定する
+            //ファイルの読み込みが終了すると、config.Doneをtrueにする
             config.SetDone();
         }
 
@@ -82,7 +82,7 @@ namespace test
             var config = new TelePrompterConfig();
             var displayTask = ShowTeleprompter(config);
             var speedTask = GetInput(config);
-            //
+            //二つのTaskが完了するまで処理を実行
             await Task.WhenAll(displayTask, speedTask);
         }
     }
